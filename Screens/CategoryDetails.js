@@ -1,0 +1,26 @@
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+
+export default function CategoryDetails({ route }) {
+  const { category } = route.params;
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>{category.name} Movies</Text>
+      {/* คุณสามารถเพิ่ม FlatList หรือ Component อื่นๆ เพื่อแสดงรายชื่อหนังในหมวดหมู่นี้ได้ที่นี่ */}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+});
