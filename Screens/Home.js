@@ -10,40 +10,89 @@ export default function Home({ navigation }) {
   const [search, setSearch] = useState('');
   const [filteredData, setFilteredData] = useState([]);
 
+  const fetchData = async () => {
+    let allMovies = [];
+
+    const movieCollection = collection(db, "Movie");
+    const movieSnapshot = await getDocs(movieCollection);
+
+    for (const doc of movieSnapshot.docs) {
+      const docData = doc.data();
+
+      // Fetch Hot_movie subcollection data
+      const subcollectionRef = collection(db, "Movie", doc.id, 'Hot_movie');
+      const subcollectionSnapshot = await getDocs(subcollectionRef);
+      const subcollectionData = subcollectionSnapshot.docs.map(subDoc => subDoc.data());
+      
+      allMovies = [...allMovies, ...subcollectionData];
+    }
+
+    setData(allMovies);
+    setFilteredData(allMovies);
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      const querySnapshot = await getDocs(collection(db, "Movie"));
-      const docsData = querySnapshot.docs.map(doc => doc.data());
-      setData(docsData);
-      setFilteredData(docsData);
-    };
     fetchData();
   }, []);
 
-  const updateSearch = (search) => {
+  const fetchAllMovies = async () => {
+    let allMovies = [];
+
+    const movieCollection = collection(db, "Movie");
+    const movieSnapshot = await getDocs(movieCollection);
+
+    for (const doc of movieSnapshot.docs) {
+      const docData = doc.data();
+
+      // Add main document data
+      allMovies.push({ id: doc.id, ...docData });
+
+      // Fetch subcollection data
+      const subcollections = ['Hot_movie', 'Action', 'Comedy', 'Drama', 'Horror', 'Romance'];
+      for (const subcollection of subcollections) {
+        const subcollectionRef = collection(db, "Movie", doc.id, subcollection);
+        const subcollectionSnapshot = await getDocs(subcollectionRef);
+        const subcollectionData = subcollectionSnapshot.docs.map(subDoc => subDoc.data());
+        allMovies = [...allMovies, ...subcollectionData];
+      }
+    }
+
+    return allMovies;
+  };
+
+  const updateSearch = async (search) => {
     setSearch(search);
+
     if (search) {
-      const newData = data.filter((item) => {
+      const allMovies = await fetchAllMovies();
+      const newData = allMovies.filter((item) => {
         const itemData = item.movie_name ? item.movie_name.toUpperCase() : ''.toUpperCase();
         const textData = search.toUpperCase();
         return itemData.indexOf(textData) > -1;
       });
       setFilteredData(newData);
     } else {
-      setFilteredData(data);
+      fetchData();
     }
   };
 
-  const renderItem = ({ item }) => (
-    <View style={styles.item}>
-      <TouchableOpacity style={styles.imageContainer} onPress={() => navigation.navigate('Details', { item })}>
-        <Image style={styles.image} source={{ uri: item.movie_image }} />
-      </TouchableOpacity>
-      <Text style={styles.title} onPress={() => navigation.navigate('Details', { item })}>
-        {"\n"}{item.movie_name}
-      </Text>
-    </View>
-  );
+  const renderItem = ({ item }) => {
+    // Check if item has required properties
+    if (!item.movie_image || !item.movie_name) {
+      return null;
+    }
+
+    return (
+      <View style={styles.item}>
+        <TouchableOpacity style={styles.imageContainer} onPress={() => navigation.navigate('Details', { item })}>
+          <Image style={styles.image} source={{ uri: item.movie_image }} />
+        </TouchableOpacity>
+        <Text style={styles.title} onPress={() => navigation.navigate('Details', { item })}>
+          {"\n"}{item.movie_name}
+        </Text>
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>

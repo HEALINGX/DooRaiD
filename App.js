@@ -17,15 +17,30 @@ const Stack = createStackNavigator();
 
 const HomeStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: true }}>
-    <Stack.Screen name="DooRaiD" component={Home} />
-    <Stack.Screen name="Details" component={Details} />
+    <Stack.Screen 
+      name="DooRaiD" 
+      component={Home} 
+      options={{ tabBarStyle: { display: 'flex' } }} // Show tab bar on Home
+    />
+    <Stack.Screen 
+      name="Details" 
+      component={Details} 
+      options={{ tabBarStyle: { display: 'none' } }} // Hide tab bar on Details
+    />
   </Stack.Navigator>
 );
 
 const CategoryStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: true }}>
     <Stack.Screen name="Category" component={Category} />
-    <Stack.Screen name="CategoryDetails" component={CategoryDetails} /> 
+    <Stack.Screen 
+      name="CategoryDetails" 
+      component={CategoryDetails} 
+      options={({ route }) => ({ 
+        title: route.params.category || 'Category Details',
+        tabBarStyle: { display: 'none' }, // Hide tab bar for this screen
+      })}
+    />
   </Stack.Navigator>
 );
 
