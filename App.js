@@ -11,9 +11,29 @@ import Category from './Screens/Category';
 import Details from './Screens/Details';
 import Profile from "./Screens/Profile";
 import CategoryDetails from "./Screens/CategoryDetails";
+import Logins from "./Screens/Logins";
+import Register from "./Screens/Register";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
+
+const LoginStack = () => (
+  <Stack.Navigator screenOptions={{ headerShown: true }}>
+    <Stack.Screen name="Login" component={Logins} />
+    <Stack.Screen name="Register" component={Register} />
+    <Stack.Screen 
+      name="DooRaiD" 
+      component={Home} 
+      options={{ tabBarStyle: { display: 'flex' } }} // Show tab bar on Home
+    />
+    <Stack.Screen 
+      name="Details" 
+      component={Details} 
+      options={{ tabBarStyle: { display: 'none' } }} // Hide tab bar on Details
+    />
+  </Stack.Navigator>
+);
 
 const HomeStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: true }}>
@@ -38,15 +58,14 @@ const CategoryStack = () => (
       component={CategoryDetails} 
       options={({ route }) => ({ 
         title: route.params.category || 'Category Details',
-        tabBarStyle: { display: 'none' }, // Hide tab bar for this screen
+        tabBarStyle: { display: 'none' },
       })}
     />
-  </Stack.Navigator>
-);
-
-const ProfileStack = () => (
-  <Stack.Navigator screenOptions={{ headerShown: true }}>
-    <Stack.Screen name="Profile" component={Profile} />
+    <Stack.Screen 
+      name="Details" 
+      component={Details} 
+      options={{ tabBarStyle: { display: 'none' } }} // Hide tab bar on Details
+    />
   </Stack.Navigator>
 );
 
@@ -66,51 +85,55 @@ const screenOptions = {
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Tab.Navigator screenOptions={screenOptions}>
-        <Tab.Screen 
-          name="HomeTab" 
-          component={HomeStack} 
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View style={{ alignItems: "center", justifyContent: "center"}}>
-                <Entypo name="home" size={24} color={focused ? "#16247d" : "#111"} />
-                <Text style={{ fontSize: 12, color: focused ? "#16247d" : "#111" }}>
-                  Home
-                </Text>
-              </View>
-            ),
-          }}
-        />
-        <Tab.Screen 
-          name="CategoryTab" 
-          component={CategoryStack} 
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View style={{ alignItems: "center", justifyContent: "center"}}>
-                <MaterialIcons name="category" size={24} color={focused ? "#16247d" : "#111"} />
-                <Text style={{ fontSize: 12, color: focused ? "#16247d" : "#111" }}>
-                  Category
-                </Text>
-              </View>
-            ),
-          }}
-        />
-        <Tab.Screen 
-          name="ProfileTab" 
-          component={ProfileStack} 
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View style={{ alignItems: "center", justifyContent: "center"}}>
-                <FontAwesome name="user" size={24} color={focused ? "#16247d" : "#111"} />
-                <Text style={{ fontSize: 12, color: focused ? "#16247d" : "#111" }}>
-                  Profile
-                </Text>
-              </View>
-            ),
-          }}
-        />
-      </Tab.Navigator>
-    </NavigationContainer>
+    <AuthProvider>
+      <NavigationContainer>
+          <Tab.Navigator screenOptions={screenOptions}>
+            <Tab.Screen 
+              name="HomeTab" 
+              component={HomeStack} 
+              options={{
+                tabBarIcon: ({ focused }) => (
+                  <View style={{ alignItems: "center", justifyContent: "center"}}>
+                    <Entypo name="home" size={24} color={focused ? "#16247d" : "#111"} />
+                    <Text style={{ fontSize: 12, color: focused ? "#16247d" : "#111" }}>
+                      Home
+                    </Text>
+                  </View>
+                ),
+              }}
+            />
+            <Tab.Screen 
+              name="CategoryTab" 
+              component={CategoryStack} 
+              options={{
+                tabBarIcon: ({ focused }) => (
+                  <View style={{ alignItems: "center", justifyContent: "center"}}>
+                    <MaterialIcons name="category" size={24} color={focused ? "#16247d" : "#111"} />
+                    <Text style={{ fontSize: 12, color: focused ? "#16247d" : "#111" }}>
+                      Category
+                    </Text>
+                  </View>
+                ),
+              }}
+            />
+            <Tab.Screen 
+              name="ProfileTab" 
+              component={Profile} 
+              options={{
+                tabBarIcon: ({ focused }) => (
+                  <View style={{ alignItems: "center", justifyContent: "center"}}>
+                    <FontAwesome name="user" size={24} color={focused ? "#16247d" : "#111"} />
+                    <Text style={{ fontSize: 12, color: focused ? "#16247d" : "#111" }}>
+                      Profile
+                    </Text>
+                  </View>
+                ),
+              }}
+            />
+          </Tab.Navigator>
+      </NavigationContainer>
+    </AuthProvider>
   );
+
+  
 }

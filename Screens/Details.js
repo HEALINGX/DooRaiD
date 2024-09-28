@@ -106,6 +106,7 @@ const styles = StyleSheet.create({
   detailsContainer: {
     alignItems: 'center',
     marginVertical: 16,
+    marginBottom: 100,
   },
   title: {
     fontSize: 32,

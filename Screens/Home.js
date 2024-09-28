@@ -3,12 +3,14 @@ import { collection, getDocs } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, FlatList, SafeAreaView, Image, TouchableOpacity } from 'react-native';
 import { db } from '../Configs/Firebase';
-import { SearchBar } from 'react-native-elements';
+import { Button, SearchBar } from 'react-native-elements';
+import { useAuth } from '../context/AuthContext';
 
 export default function Home({ navigation }) {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState('');
   const [filteredData, setFilteredData] = useState([]);
+  const auth = useAuth();
 
   const fetchData = async () => {
     let allMovies = [];
@@ -124,6 +126,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     justifyContent: 'flex-start',
     paddingTop: 20,
+    paddingBottom: 60,
   },
   item: {
     backgroundColor: '#fff',
@@ -141,6 +144,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative', // ใช้ relative เพื่อให้ตำแหน่งข้อความ Hot Movies สามารถถูกจัดการได้
   },
   image: {
     width: 300,
