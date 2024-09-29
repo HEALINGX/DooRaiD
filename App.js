@@ -22,16 +22,7 @@ const LoginStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: true }}>
     <Stack.Screen name="Login" component={Logins} />
     <Stack.Screen name="Register" component={Register} />
-    <Stack.Screen 
-      name="DooRaiD" 
-      component={Home} 
-      options={{ tabBarStyle: { display: 'flex' } }} // Show tab bar on Home
-    />
-    <Stack.Screen 
-      name="Details" 
-      component={Details} 
-      options={{ tabBarStyle: { display: 'none' } }} // Hide tab bar on Details
-    />
+    <Stack.Screen name="Profile" component={Profile} />
   </Stack.Navigator>
 );
 
@@ -118,7 +109,7 @@ export default function App() {
             />
             <Tab.Screen 
               name="ProfileTab" 
-              component={Profile} 
+              component={LoginStack}
               options={{
                 tabBarIcon: ({ focused }) => (
                   <View style={{ alignItems: "center", justifyContent: "center"}}>

@@ -12,7 +12,7 @@ const Logins = ({ navigation }) => {
       await auth.signInWithEmail(email, password);
       
       Alert.alert('Login Success', 'Welcome back!');
-      navigation.navigate('Home');
+      navigation.navigate('Profile');
     } catch (error) {
       Alert.alert('Login Failed', error.message);
     }
@@ -39,7 +39,6 @@ const Logins = ({ navigation }) => {
         autoCapitalize="none"
       />
       <Button title="Login" onPress={handleLogin} />
-      <Button title="Logout" onPress={() => {auth.logout()}} style={{marginTop: 16}} />
       <Text style={styles.registerText}>
         Don't have an account?{' '}
         <Text style={styles.registerLink} onPress={() => navigation.navigate('Register')}>

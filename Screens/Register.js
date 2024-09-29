@@ -3,14 +3,14 @@ import { View, TextInput, Button, Text, StyleSheet, Alert } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 
 const Register = ({ navigation }) => {
-    const auth = useAuth();
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+  const auth = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
 
   const handleRegister = async () => {
     try {
-      await auth.signUpWithEmail(email, password);
-
+      await auth.signUpWithEmail(email, password, username);
       Alert.alert('Registration Success', 'You can now log in!');
       navigation.navigate('Login');
     } catch (error) {
@@ -21,6 +21,12 @@ const Register = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Register</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Username"
+        value={username}
+        onChangeText={setUsername}
+      />
       <TextInput
         style={styles.input}
         placeholder="Email"
