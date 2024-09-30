@@ -85,6 +85,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 16,
         backgroundColor: '#f0f0f0',
+        justifyContent: 'center'
     },
     infoContainer: {
         width: '100%',

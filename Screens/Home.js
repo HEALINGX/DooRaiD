@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, FlatList, SafeAreaView, Image, TouchableOpacity } from 'react-native';
 import { db } from '../Configs/Firebase';
@@ -10,6 +10,7 @@ export default function Home({ navigation }) {
   const [data, setData] = useState([]);
   const [search, setSearch] = useState('');
   const [filteredData, setFilteredData] = useState([]);
+  const [role, setRole] = useState(null);
   const auth = useAuth();
 
   const fetchData = async () => {
@@ -25,7 +26,7 @@ export default function Home({ navigation }) {
       const subcollectionRef = collection(db, "Movie", doc.id, 'Hot_movie');
       const subcollectionSnapshot = await getDocs(subcollectionRef);
       const subcollectionData = subcollectionSnapshot.docs.map(subDoc => subDoc.data());
-      
+
       allMovies = [...allMovies, ...subcollectionData];
     }
 
@@ -33,8 +34,23 @@ export default function Home({ navigation }) {
     setFilteredData(allMovies);
   };
 
+  const fetchUserRole = async () => {
+    if (auth.currentUser) {
+      const userDocRef = doc(db, 'users', auth.currentUser.uid);
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        setRole(userData.role);  // Fetch and set the user's role
+        console.log("User role:", userData.role);
+      } else {
+        console.log("No such document!");
+      }
+    }
+  };
+
   useEffect(() => {
     fetchData();
+    fetchUserRole();  // Fetch role when the component mounts
   }, []);
 
   const fetchAllMovies = async () => {
@@ -144,7 +160,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    position: 'relative', // ใช้ relative เพื่อให้ตำแหน่งข้อความ Hot Movies สามารถถูกจัดการได้
+    position: 'relative',
   },
   image: {
     width: 300,
