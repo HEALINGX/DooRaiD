@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ActivityIndicator, Button, Alert } from 'react-
 import { useAuth } from '../context/AuthContext';
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../Configs/Firebase";
+import { Image } from 'react-native-elements';
 
 const Profile = ({ navigation }) => {
     const { currentUser, logout } = useAuth();
@@ -53,6 +54,7 @@ const Profile = ({ navigation }) => {
         <View style={styles.container}>
             {userData ? (
                 <View style={styles.infoContainer}>
+                    <Image src='proflie_pic.webp'/>
                     <View style={styles.infoBox}>
                         <Text style={styles.infoLabel}>Username:</Text>
                         <Text style={styles.infoText}>{userData.displayName}</Text>
@@ -83,6 +85,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 16,
         backgroundColor: '#f0f0f0',
+        justifyContent: 'center'
     },
     infoContainer: {
         width: '100%',

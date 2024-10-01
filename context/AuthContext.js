@@ -31,6 +31,7 @@ export const AuthProvider = ({ children }) => {
         uid: user.uid,
         displayName: displayName,
         email: user.email,
+        role: "user"
       };
       await setDoc(doc(db, 'users', user.uid), userData);
       console.log("ผู้ใช้ถูกลงทะเบียนด้วยชื่อแสดง:", displayName);
