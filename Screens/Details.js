@@ -6,6 +6,48 @@ import { useAuth } from '../context/AuthContext'; // Use the custom hook
 import { useNavigation } from '@react-navigation/native'; // Import the useNavigation hook
 import { useFocusEffect } from '@react-navigation/native';
 
+const WatchBar = ({ item, header, active, toggleContent }) => {
+  const [contentVisible, setContentVisible] = useState(false);
+  const opacity = useRef(new Animated.Value(0)).current; // Initialize opacity value
+
+  const handleToggle = () => {
+    toggleContent();
+    setContentVisible((prev) => !prev); // Toggle visibility
+
+    // Animate the opacity when content visibility changes
+    Animated.timing(opacity, {
+      toValue: contentVisible ? 0 : 1, // Fade in/out based on contentVisible
+      duration: 150,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  return (
+    <View style={styles.accordionCard}>
+      <TouchableOpacity
+        style={[styles.header, active && styles.activeHeader]}
+        onPress={handleToggle}
+      >
+        <Text style={styles.headerText}>{header}</Text>
+        <Text style={[styles.icon, active && styles.rotatedIcon]}>▼</Text>
+      </TouchableOpacity>
+      {/* Animate opacity of the content */}
+      <Animated.View style={[styles.collapse, { opacity }]}>
+        {contentVisible && (
+          <View style={styles.actorContainer}>
+            <View style={styles.actorRow}>
+              <View style={styles.actorWrapper}>
+                <Image style={styles.imageAc} source={{ uri: item.WF }} />
+                <Text style={styles.actorName}>{item.WFT}</Text>
+              </View>
+              
+            </View>
+          </View>
+        )}
+      </Animated.View>
+    </View>
+  );
+};
 // DetailBar Component
 const DetailBar = ({ text, header, active, toggleContent }) => {
   const [contentVisible, setContentVisible] = useState(true); // Set default to true
@@ -105,6 +147,7 @@ export default function Details({ route }) {
   const [newComment, setNewComment] = useState(''); // State for new comment input
   const [activeDetail, setActiveDetail] = useState(true);
   const [activeActors, setActiveActors] = useState(false);
+  const [activeWatch, setActiveWatch] = useState(false);
 
   // Toggle active accordion item for details
   const handleToggleDetail = () => {
@@ -114,6 +157,10 @@ export default function Details({ route }) {
   // Toggle active accordion item for actors
   const handleToggleActors = () => {
     setActiveActors(!activeActors);
+  };
+
+  const handleToggleWatch = () => {
+    setActiveWatch(!activeWatch);
   };
 
   useFocusEffect(
@@ -210,6 +257,14 @@ export default function Details({ route }) {
             header="Actors"
             active={activeActors}
             toggleContent={handleToggleActors}
+          />
+
+          {/* Actors */}
+          <WatchBar
+            item={item}
+            header="Watch From"
+            active={activeWatch}
+            toggleContent={handleToggleWatch}
           />
         </View>
 
@@ -339,7 +394,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   actorName: {
-    fontSize: 14,
+    fontSize: 13,
     textAlign: 'center',
     marginTop: 5,
   },
