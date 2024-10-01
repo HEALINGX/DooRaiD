@@ -268,6 +268,13 @@ export default function Details({ route }) {
           />
         </View>
 
+        {/* Delete Button for Admin */}
+        {userRole === 'admin' && (
+        <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteMovie}>
+          <Text style={styles.deleteButtonText}>Delete Movie</Text>
+        </TouchableOpacity>
+      )}
+
         {/* Add Comment Section */}
         <View style={styles.addCommentContainer}>
           <TextInput
@@ -298,12 +305,7 @@ export default function Details({ route }) {
         )}
 
 
-        {/* Delete Button for Admin */}
-        {userRole === 'admin' && (
-        <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteMovie}>
-          <Text style={styles.deleteButtonText}>Delete Movie</Text>
-        </TouchableOpacity>
-      )}
+        
       </ScrollView>
     </KeyboardAvoidingView>
   );
