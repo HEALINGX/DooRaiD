@@ -296,14 +296,15 @@ export default function Details({ route }) {
         ) : (
           <Text style={styles.noComments}>No comments yet.</Text>
         )}
-      </ScrollView>
 
-      {/* Delete Button for Admin */}
-      {userRole === 'admin' && (
+
+        {/* Delete Button for Admin */}
+        {userRole === 'admin' && (
         <TouchableOpacity style={styles.deleteButton} onPress={handleDeleteMovie}>
           <Text style={styles.deleteButtonText}>Delete Movie</Text>
         </TouchableOpacity>
       )}
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
