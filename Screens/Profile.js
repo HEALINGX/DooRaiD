@@ -1,93 +1,122 @@
-import React, { useState,useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity } from 'react-native';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../Configs/Firebase';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ActivityIndicator, Button, Alert } from 'react-native';
+import { useAuth } from '../context/AuthContext';
+import { doc, getDoc } from "firebase/firestore";
+import { db } from "../Configs/Firebase";
+import { Image } from 'react-native-elements';
 
-export default function Profile() {
-  const [data, setData] = useState([]);
-  const [username, setUsername] = useState('CurrentUsername'); // Replace with actual current username
-  const [editable, setEditable] = useState(false);
-  const [newUsername, setNewUsername] = useState(username);
+const Profile = ({ navigation }) => {
+    const { currentUser, logout } = useAuth();
+    const [userData, setUserData] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const querySnapshot = await getDocs(collection(db, "Movie"));
-      const docsData = querySnapshot.docs.map(doc => doc.data());
-      setData(docsData);
+    useEffect(() => {
+        const fetchUserData = async () => {
+            if (currentUser) {
+                try {
+                    const docRef = doc(db, 'users', currentUser.uid);
+                    const docSnap = await getDoc(docRef);
+
+                    if (docSnap.exists()) {
+                        setUserData(docSnap.data());
+                    } else {
+                        console.log("No such document!");
+                    }
+                } catch (error) {
+                    console.error("Error fetching user data: ", error);
+                } finally {
+                    setLoading(false);
+                }
+            }
+        };
+
+        fetchUserData();
+    }, [currentUser]);
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            navigation.navigate('Login'); // Navigate to login screen after logout
+        } catch (error) {
+            Alert.alert('Logout Failed', error.message);
+        }
     };
-    fetchData();
-  }, []);
 
-  const handleEdit = () => {
-    setEditable(!editable);
-    if (editable) {
-      setUsername(newUsername); // Save the new username
+    if (loading) {
+        return (
+            <View style={styles.loaderContainer}>
+                <ActivityIndicator size="large" color="#16247d" />
+            </View>
+        );
     }
-  };
 
-  const handleLogout = () => {
-    Alert.alert(
-      "Log Out",
-      "Are you sure you want to log out?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel"
-        },
-        { text: "OK", onPress: () => {
-            // Handle log out here
-            // For example, clear auth tokens and navigate to login screen
-        }}
-      ]
+    return (
+        <View style={styles.container}>
+            {userData ? (
+                <View style={styles.infoContainer}>
+                    <Image src='proflie_pic.webp'/>
+                    <View style={styles.infoBox}>
+                        <Text style={styles.infoLabel}>Username:</Text>
+                        <Text style={styles.infoText}>{userData.displayName}</Text>
+                    </View>
+                    <View style={styles.infoBox}>
+                        <Text style={styles.infoLabel}>Email:</Text>
+                        <Text style={styles.infoText}>{userData.email}</Text>
+                    </View>
+                </View>
+            ) : (
+                <Text style={styles.infoText}>No user data found.</Text>
+            )}
+            <View style={styles.logoutContainer}>
+                <Button title="Logout" onPress={handleLogout} color="#16247d" />
+            </View>
+        </View>
     );
-  };
-
-  return (
-    <View style={styles.container}>
-      <Text style={styles.label}>Username:</Text>
-      <TextInput
-        style={styles.input}
-        value={editable ? newUsername : username}
-        onChangeText={setNewUsername}
-        editable={editable}
-      />
-      <TouchableOpacity style={styles.button} onPress={handleEdit}>
-        <Text style={styles.buttonText}>{editable ? 'Save' : 'Edit'}</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={handleLogout}>
-        <Text style={styles.buttonText}>Log Out</Text>
-      </TouchableOpacity>
-    </View>
-  );
-}
+};
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
-  },
-  label: {
-    fontSize: 18,
-    marginBottom: 10,
-  },
-  input: {
-    fontSize: 18,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 5,
-    marginBottom: 20,
-  },
-  button: {
-    backgroundColor: '#16247d',
-    padding: 15,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginVertical: 10,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-  },
+    loaderContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    container: {
+        flex: 1,
+        alignItems: 'center',
+        padding: 16,
+        backgroundColor: '#f0f0f0',
+        justifyContent: 'center'
+    },
+    infoContainer: {
+        width: '100%',
+        paddingHorizontal: 20,
+    },
+    infoBox: {
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        padding: 16,
+        marginVertical: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        elevation: 4,
+    },
+    infoLabel: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 4,
+        color: '#555',
+    },
+    infoText: {
+        fontSize: 18,
+        color: '#333',
+    },
+    logoutContainer: {
+        marginTop: 20,
+        width: '100%',
+        paddingHorizontal: 20,
+    },
 });
+
+export default Profile;
