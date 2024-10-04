@@ -217,6 +217,7 @@ export default function Details({ route }) {
   const handleDeleteMovie = async () => {
     try {
       const movieRef = doc(db, "Movie", documentId, category, movie_name);
+      console.log("movie_name: ",movie_name);
       await deleteDoc(movieRef);
       console.log("Movie deleted successfully");
       navigation.goBack(); // Navigate back after deletion
@@ -388,7 +389,7 @@ const styles = StyleSheet.create({
   },
   actorWrapper: {
     alignItems: 'center',
-    width: '45%', // Adjust the width based on your layout
+    width: '45%', 
     marginBottom: 10,
   },
   imageAc: {
